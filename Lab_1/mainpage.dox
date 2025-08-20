@@ -1,0 +1,26 @@
+/*!
+\mainpage 
+
+\section intro_sec Introducción
+
+Como primer laboratorio de la asignatura de **Informática II**, se propone la implementación de un conjunto de ejercicios en C++ que permiten reforzar conceptos básicos de programación, incluyendo el uso de condicionales, bucles, funciones, validación de datos, manejo de cadenas numéricas y operaciones matemáticas.  
+
+Este proyecto no se centra en un único algoritmo, sino en la resolución de diferentes problemas clásicos que ayudan al estudiante a mejorar sus habilidades de análisis y codificación. El archivo principal, \ref main.cpp "main.cpp", contiene la implementación de todos los ejercicios y problemas propuestos.  
+
+\section details_sec Detalles del Programa
+- Cada función representa un ejercicio o problema independiente.
+- Se incluyen operaciones matemáticas como factoriales, potencias, verificación de primos y aproximaciones numéricas.
+- Se abordan problemas de manipulación de números, validación de datos y manejo de estructuras de control.
+- Todo el código está documentado en formato Doxygen para facilitar la comprensión y el mantenimiento.
+
+\section author_sec Información del Autor
+- **Autor**: Julian Mauricio Sanchez Ceballos
+- **Asignatura**: Informática II
+- **Fecha**: 20/08/2025
+- **Versión**: 1.0
+
+\section notes_sec Notas
+- Cada ejercicio puede probarse de manera independiente.
+- Se recomienda compilar el proyecto con un compilador compatible con **C++17** o superior.
+- El código está diseñado con fines académicos y de aprendizaje.
+*/
