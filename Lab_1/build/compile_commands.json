@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/julian-sanchez/Univerisdad/Informatica 2/Laboratorio/Lab_1/build",
+  "command": "/usr/bin/g++ -g -o CMakeFiles/Lab_1.dir/main.cpp.o -c \"/home/julian-sanchez/Univerisdad/Informatica 2/Laboratorio/Lab_1/main.cpp\"",
+  "file": "/home/julian-sanchez/Univerisdad/Informatica 2/Laboratorio/Lab_1/main.cpp",
+  "output": "CMakeFiles/Lab_1.dir/main.cpp.o"
+}
+]
