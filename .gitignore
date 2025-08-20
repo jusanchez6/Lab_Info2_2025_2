@@ -39,3 +39,13 @@
 
 # debug information files
 *.dwo
+
+# CMake files
+./build
+.vscode
+**/.vscode/
+**/build/
+**/html/
+**/.cache/
+
+
