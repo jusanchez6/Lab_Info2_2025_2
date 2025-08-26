@@ -121,7 +121,6 @@ void ejercicio_10 (void) {
  * @brief Muestra las potencias de un número de 1 a 5.
  * 
  * Solicita un número N y calcula N^1, N^2, ..., N^5.
- * @warning Actualmente la función solo multiplica N*i en lugar de calcular N^i.
  */
 void ejercicio_12 (void) {     
     std::cout << "Ingrese un numero: " << std::endl;     
@@ -704,7 +703,7 @@ void problema_16 (void ) {
  */
 int main () {
     std::cout << "Hola Mundo" << std::endl;
-    ejercicio_12();
+    problema_16();
     return 0;
 }
 
