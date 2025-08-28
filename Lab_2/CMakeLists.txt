@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.16)
+
+
+project(Lab_2 LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDAR 17)
+set(CMAKE_CXX_STANDAR_REQUIRED ON)
+
+add_executable(Lab_2 main.cpp)
+
+include(GNUInstallDirs)
+install(TARGETS Lab_2
+    LIBRARY DESTINATION ${CAMKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CAMKE_INSTALL_BINDIR}
+)
