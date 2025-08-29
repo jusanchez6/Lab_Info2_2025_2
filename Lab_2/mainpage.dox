@@ -1,0 +1,44 @@
+/*!
+\mainpage Documentación del laboratorio
+
+\section intro_sec Introducción
+
+Este proyecto corresponde al segundo laboratorio de la asignatura de **Informática II**.  
+Su objetivo principal es reforzar conceptos fundamentales de programación en **C++**, mediante la implementación de ejercicios prácticos que integran el uso de condicionales, ciclos, funciones, validación de datos, manejo de cadenas, estructuras matriciales y operaciones combinatorias.  
+
+Además de los problemas puramente algorítmicos, el proyecto incluye vínculos con simulaciones en **Arduino (Tinkercad)**, lo cual permite relacionar los fundamentos de programación con aplicaciones en electrónica y sistemas embebidos.  
+
+\section objectives_sec Objetivos de Aprendizaje
+- Reforzar el uso de estructuras de control (condicionales y bucles).
+- Practicar el paso de parámetros por valor y por referencia en funciones.
+- Implementar operaciones matemáticas clásicas (factoriales, combinatoria, conversión de números romanos, etc.).
+- Desarrollar algoritmos para la manipulación de cadenas y matrices.
+- Introducir el análisis de problemas aplicados a la electrónica a través de simulaciones con Arduino.
+
+\section details_sec Detalles del Programa
+- Cada **función** implementa un problema independiente y puede ejecutarse de manera modular.
+- Se incluyen ejercicios de:
+  - Manipulación de cadenas (conversión a mayúsculas, separación de texto y números, conversión de string a entero).
+  - Operaciones matemáticas y combinatorias (factorial, permutaciones, rutas en mallas, matriz mágica).
+  - Validación de entradas y control de errores.
+  - Rotación de matrices y conteo de frecuencias.
+- La documentación se genera con **Doxygen** para facilitar la lectura, comprensión y mantenimiento del código.
+
+\section methodology_sec Metodología
+1. Se plantearon problemas clásicos de programación y matemáticas.
+2. Se implementaron soluciones paso a paso en C++ con buenas prácticas.
+3. Se validaron las funciones con casos de prueba simples.
+4. Se integró el uso de simulaciones externas en Tinkercad para vincular teoría y práctica.
+
+\section author_sec Información del Autor
+- **Autor**: Julian Mauricio Sánchez Ceballos  
+- **Asignatura**: Informática II  
+- **Fecha**: 28/08/2025  
+- **Versión**: 1.0  
+
+\section notes_sec Notas
+- Se recomienda compilar el proyecto con un compilador compatible con **C++17** o superior.  
+- El código tiene un fin **académico** y está orientado al aprendizaje.  
+- Todos los ejercicios se encuentran en el archivo principal \ref main.cpp "main.cpp".  
+*/
+
