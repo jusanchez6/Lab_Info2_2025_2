@@ -14,7 +14,7 @@ bool cypher_1(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols);
 int main() {
     // Entrada y esperado (para método 1 debería ser 10110100001111010001011010011011)
     std::string input    = "01000001011000100100001101100100";
-    std::string expected = "10110100001111010001011010011011";  
+    std::string expected = "00101000001100010010100100110010";  
     int n = 4;
     int rows = 1;
     int cols = input.size();
@@ -38,7 +38,7 @@ int main() {
     }
 
     // Ejecutar cifrado
-    cypher_1(matrix, n, rows, cols);
+    cypher_2(matrix, n, rows, cols);
 
     // Reconstruir string de salida
     std::string result;

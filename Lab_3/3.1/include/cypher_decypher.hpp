@@ -10,6 +10,9 @@
 
 
 bool cypher_1(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols);
+bool cypher_2(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols);
+
+
 bool decypher_1(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols);
 
 
