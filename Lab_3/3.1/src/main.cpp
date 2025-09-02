@@ -56,5 +56,31 @@ int main() {
     delete[] matrix[0];
     delete[] matrix;
 
+
+    // probar los decifrados
+    std::string input2    = "10110100001111010001011010011011";
+    std::string expected2 = "01000001011000100100001101100100";  
+
+    cols = input2.size();
+    uint8_t **matrix2 = new uint8_t*[rows];
+    matrix2[0] = new uint8_t[cols];
+
+    for (int j = 0; j < cols; j++) {
+        matrix2[0][j] = (input2[j] == '1') ? 1 : 0;
+    }
+
+    decypher_1(matrix2, n, rows, cols);
+    std::string result2;
+    for (int j = 0; j < cols; j++) {
+        result2.push_back(matrix2[0][j] ? '1' : '0');
+    }
+    std::cout << "Resultado: " << result2 << std::endl;
+    assert(result2 == expected2 && "El resultado del cifrado NO coincide con lo esperado");
+    std::cout << "✅ Test pasado: la salida es correcta." << std::endl;
+
+    // Liberar memoria
+    delete[] matrix2[0];
+    delete[] matrix2;
+
     return 0;
 }
