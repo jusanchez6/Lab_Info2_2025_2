@@ -1,4 +1,4 @@
-#include "cypher_decypher.hpp"
+#include "cypher.hpp"
 
 namespace
 {

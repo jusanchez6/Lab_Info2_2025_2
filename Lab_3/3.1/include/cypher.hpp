@@ -1,5 +1,5 @@
 /**
- * @file cypher_decypher.hpp
+ * @file cypher.hpp
  * 
  * @brief Prototipos de funciones para cifrado y descifrado de matrices binarias.
  * @author Julian Sanchez
@@ -7,8 +7,8 @@
  * 
  */
 
-#ifndef CYPHER_DECYPHER_HPP
-#define CYPHER_DECYPHER_HPP
+#ifndef CYPHER_HPP
+#define CYPHER_HPP
 
 #include <iostream>
 #include <cstdint>
@@ -48,4 +48,4 @@ bool decypher_1(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols);
 
 bool decypher_2(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols);
 
-#endif // CYPHER_DECYPHER_HPP
+#endif // CYPHER_HPP
