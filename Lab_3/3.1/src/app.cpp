@@ -1,8 +1,8 @@
 #include "app.hpp"
 
 
-error_t app_main (char * argv[]) {
-    error_t result;
+my_error_t app_main (char * argv[]) {
+    my_error_t result;
     char *origen = argv[1];
     char *destino = argv[2];
     char *metodo = argv[3];
@@ -35,7 +35,7 @@ error_t app_main (char * argv[]) {
 }
 
 
-error_t app (metodo_ptr metodo, char *origen, char *destino, uint8_t semilla) {
+my_error_t app (metodo_ptr metodo, char *origen, char *destino, uint8_t semilla) {
     uint8_t *memory;
     uint8_t ** matrix_binaria;
     int32_t size;
@@ -76,6 +76,8 @@ error_t app (metodo_ptr metodo, char *origen, char *destino, uint8_t semilla) {
 
     binary_to_char(matrix_binaria, memory, size);
 
+    cout << "Matrix binaria" << endl;
+
     for (int i=0; i < size; i++)
         for (int j=0; j < BITS_ON_BYTES; j++) 
             std::cout << (int)matrix_binaria[i][j];
@@ -90,6 +92,10 @@ error_t app (metodo_ptr metodo, char *origen, char *destino, uint8_t semilla) {
     }
 
     cout << "Archivo escrito" << endl;
+
+     for (int i=0; i < size; i++) {
+        std::cout <<(memory[i]);
+    }
 
     delete[] memory;
 
@@ -128,7 +134,7 @@ int read_file(const char *filename, uint8_t ** memory) {
 }
 
 
-error_t assing_memory(uint8_t *** matrix_binaria, int size) {
+my_error_t assing_memory(uint8_t *** matrix_binaria, int size) {
     
     // 1. Reservamos memoria para un arreglo de punteros a uint8_t
     //    Cada elemento de este arreglo será una "fila" de la matriz binaria
@@ -167,7 +173,7 @@ void delete_memory(uint8_t ***matrix_binaria, uint8_t size) {
 
 }
 
-error_t write_file(const char *filename, uint8_t *memory, int32_t size) {
+my_error_t write_file(const char *filename, uint8_t *memory, int32_t size) {
     ofstream file (filename, ios::out|ios::binary);
 
     if (!file.is_open()) {
@@ -182,7 +188,7 @@ error_t write_file(const char *filename, uint8_t *memory, int32_t size) {
 
 }
 
-error_t int_to_bynary_convert(uint8_t *memory, uint8_t ** bin_matrix, uint size) {
+my_error_t int_to_bynary_convert(uint8_t *memory, uint8_t ** bin_matrix, uint size) {
     
     for (int i = 0; i < size; i++) {
         if (!int_to_binary(memory[i], bin_matrix[i]))

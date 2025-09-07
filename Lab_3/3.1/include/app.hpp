@@ -9,13 +9,13 @@
 #include "binary_numbers.hpp"
 
 /**
- * @brief Declaración del tipo error_t para el manejo de excepciones y errores
+ * @brief Declaración del tipo my_error_t para el manejo de excepciones y errores
  */
 typedef enum {
     ERROR,      // ERROR GENERAL
     OK,         // OK
     TIMEOUT     // TIMEOUT, NO CREO USARLO
-} error_t;
+} my_error_t;
 
 
 
@@ -24,8 +24,10 @@ using metodo_ptr = bool (*)(uint8_t **, uint32_t, uint32_t, uint32_t);
 using namespace std;
 
 
+my_error_t app_main(char *argv[]);
 
-error_t app (metodo_ptr metodo, char *origen, char *destino, uint8_t semilla);
+
+my_error_t app (metodo_ptr metodo, char *origen, char *destino, uint8_t semilla);
 
 
 
@@ -48,7 +50,7 @@ int read_file(const char *filename, uint8_t **memory);
  * 
  * @return Ok: si todo salio bien
  */
-error_t write_file(const char *filename, uint8_t *memory, int32_t size);
+my_error_t write_file(const char *filename, uint8_t *memory, int32_t size);
 
 
 /**
@@ -60,7 +62,7 @@ error_t write_file(const char *filename, uint8_t *memory, int32_t size);
  * @return OK: Si todo salio bien 
  * 
  */
-error_t assing_memory(uint8_t *** matrix_binaria, int size);
+my_error_t assing_memory(uint8_t *** matrix_binaria, int size);
 
 
 
@@ -82,7 +84,7 @@ void delete_memory(uint8_t ***matrix_binaria, uint8_t size);
  * @return 1: OK
  * 
  */
-error_t int_to_bynary_convert(uint8_t *memory, uint8_t ** bin_matrix, uint size);
+my_error_t int_to_bynary_convert(uint8_t *memory, uint8_t ** bin_matrix, uint size);
 
 
 void binary_to_char(uint8_t **matrix_binaria, uint8_t *memory, int32_t size);
