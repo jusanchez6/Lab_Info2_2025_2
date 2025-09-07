@@ -14,5 +14,5 @@ target_link_libraries(app
                         cypher)
 
 
-add_executable(Lab3 main.cpp)
-target_link_libraries(Lab3 PRIVATE app)
+add_executable(ATM main.cpp)
+target_link_libraries(ATM PRIVATE app)
