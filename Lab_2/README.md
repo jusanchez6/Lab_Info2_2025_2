@@ -44,23 +44,21 @@ Cada **función** corresponde a un ejercicio independiente. Ejemplos:
 ---
 
 ## Compilación y Ejecución
+
 1. Crear directorio de compilación:
    ```bash
    mkdir build && cd build
-  ```
-
+   ```
 2. Configurar el proyecto con CMake:
-
    ```bash
    cmake ..
    ```
 3. Compilar:
-
    ```bash
    make
    ```
+   
 4. Ejecutar:
-
    ```bash
    ./Lab_2
    ```
