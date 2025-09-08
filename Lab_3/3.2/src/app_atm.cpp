@@ -222,7 +222,84 @@ namespace
         return OK;
     }
 
+    my_error_t consultar_saldo(string &file_string, string &user)
+    {
+
+        string id = user.substr(0, user.find(','));
+        string pass = user.substr(user.find(',') + 1, user.find_last_of(','));
+        uint32_t saldo = stoi(user.substr(user.find_last_of(',') + 1));
+
+        if (saldo < 1000)
+        {
+            cout << "Error. saldo menor a 1000\n";
+            return ERROR;
+        }
+        else
+        {
+            saldo -= 1000;
+            cout << "Saldo disponible: " << saldo << endl;
+        }
+
+        string new_data = id + ',' + pass + ',' + to_string(saldo);
+        file_string.replace(file_string.find(user), user.length(), new_data);
+
+        if (write_data(USERS_FILE, cypher_1, SEMILLA, file_string) == ERROR)
+        {
+            cout << "Algo salió mal y como en bancolombia se perdió la platica.\n";
+            return ERROR;
+        }
+
+        user = new_data;
+
+        return OK;
+    }
+
+    my_error_t retirar(string &file_string, string &user)
+    {
+
+        string id = user.substr(0, user.find(','));
+        string pass = user.substr(user.find(',') + 1, user.find_last_of(','));
+        uint32_t saldo = stoi(user.substr(user.find_last_of(',') + 1));
+
+        int32_t retiro;
+        cout << "Ingrese el saldo a retirar: ";
+        cin >> retiro;
+
+        if (saldo < 1000)
+        {
+            cout << "Error. saldo menor a 1000\n";
+            return ERROR;
+        }
+
+        saldo -= 1000;
+
+        if (retiro <= 0)
+        {
+            std::cout << "Error. El monto a retirar debe ser mayor a 0.\n";
+            return ERROR;
+        }
+
+        if (retiro > saldo)
+        {
+            std::cout << "Error. El monto a retirar es mayor al saldo.\n";
+            return ERROR;
+        }
+
+        cout << "Retiro por: " << retiro << endl;
+        saldo -= retiro;
+        
+        string new_data = id + "," + pass + "," + std::to_string(saldo);
+        file_string.replace(file_string.find(user), user.length(), new_data);
+        write_data(USERS_FILE, cypher_1, SEMILLA, file_string);
+        user = new_data;
+        return OK;
+    }
+
 }
+
+// ==========================================================================================
+// ==========================================================================================
+// ==========================================================================================
 
 my_error_t main_app_atm()
 {
@@ -260,12 +337,21 @@ my_error_t main_app_atm()
             }
             break;
         case 2:
+            cout << "=========================" << endl;
+            if (validar_usuario(admin_file, false, user_data))
+            {
+                cout << "=========================" << endl;
+
+                app_usuarios(users_file, user_data);
+            }
             break;
 
         case 3:
+            cout << "Salir.\n";
             break;
 
         default:
+            cout << "Opción invalida.\n";
             break;
         }
     } while (opcion != 3);
@@ -339,4 +425,33 @@ void app_administrador(string &users_file)
         }
 
     } while (opcion != 2);
+}
+
+void app_usuarios(string &file_string, string &user)
+{
+    std::cout << "Bienvenido usuario\n";
+    uint16_t opcion;
+    do
+    {
+        std::cout << "1. Consultar saldo\n2. Retirar\n3. Salir\n";
+        std::cout << "Seleccione una opción: ";
+        std::cin >> opcion;
+
+        switch (opcion)
+        {
+        case 1:
+            std::cout << "Consultar saldo\n";
+            consultar_saldo(file_string, user);
+            break;
+        case 2:
+            std::cout << "Retirar\n";
+            retirar(file_string, user);
+            break;
+        case 3:
+            std::cout << "Salir\n";
+            break;
+        default:
+            std::cout << "Opción no válida. Intente de nuevo.\n";
+        }
+    } while (opcion != 3);
 }

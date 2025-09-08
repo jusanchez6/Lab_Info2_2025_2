@@ -18,8 +18,6 @@
 
 #define ADMIN_FILE "sudo.txt"
 #define USERS_FILE "users.txt" 
-#define CYPHER "c1"
-#define DECIPHER "d1"
 #define SEMILLA 6
 #define BITS_ON_BYTES 8
 #define NULL_STR ""
@@ -38,5 +36,6 @@ my_error_t validar_usuario(const string &file_string, bool admin, string &user_d
 
 void app_administrador(string &users_file);
 
+void app_usuarios(string& file_string, string& user);
 
 #endif //APP_ATM_HPP
