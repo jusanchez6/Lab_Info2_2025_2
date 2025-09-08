@@ -61,6 +61,69 @@ namespace
         return user_file;
     }
 
+    my_error_t write_data(const char *data_file, metodo_ptr metodo, uint32_t semilla, string &file_string)
+    {
+        uint8_t *memory;
+        uint8_t **matrix_binaria;
+        int32_t size = file_string.size();
+
+        if (size == 0)
+        {
+            cout << "Sin datos para escribir.\n";
+            return ERROR;
+        }
+
+        memory = new uint8_t[size];
+
+        if (memory == NULL)
+        {
+            cout << "Error, sin memoria disponible" << endl;
+            return ERROR;
+        }
+
+        copy(file_string.begin(), file_string.end(), memory);
+
+        if (assing_memory(&matrix_binaria, size) == ERROR)
+        {
+            cout << "Error, sin memoria disponible" << endl;
+            return ERROR;
+        }
+
+        if (int_to_bynary_convert(memory, matrix_binaria, size))
+        {
+            cout << "Error. No se pudo convertir el contenido a binario.\n";
+            delete[] memory;
+            delete_memory(&matrix_binaria, size);
+            return ERROR;
+        }
+
+        delete[] memory;
+
+        if (!metodo(matrix_binaria, semilla, size, BITS_ON_BYTES))
+        {
+            cout << "Error al cifrar los datos.\n";
+            delete_memory(&matrix_binaria, size);
+            return ERROR;
+        }
+
+        binary_to_char(matrix_binaria, memory, size);
+        delete_memory(&matrix_binaria, size);
+
+        ofstream file_out(data_file, ios::binary | ios::trunc);
+
+        if (!file_out.is_open())
+        {
+            cout << "Error. No se pudo abrir el archivo de escritura.\n";
+            delete[] memory;
+            return ERROR;
+        }
+
+        file_out.write((char *)memory, size);
+        file_out.close();
+
+        return OK;
+    }
+
     bool validate_credentials(string &user, string &password, const string &file_string, bool admin, string &user_data)
     {
         istringstream stream(file_string);
@@ -82,8 +145,81 @@ namespace
         return false;
     }
 
-    my_error_t crear_usuario (string &users_file) {
-        
+    bool is_number(const string &str_number)
+    {
+        for (char c : str_number)
+            if (!isdigit(c))
+                return false;
+        return true;
+    }
+
+    bool new_user_check(const string user_data, string &id)
+    {
+
+        istringstream stream(user_data);
+        string line;
+
+        while (getline(stream, line))
+        {
+            if (line.substr(0, line.find(',')) == id)
+            {
+                cout << "El usuario ya se encuentra registrado.\n";
+                return false;
+            }
+        }
+        return true;
+    }
+
+    my_error_t crear_usuario(string &users_file)
+    {
+        string id;
+        string pass;
+        string str_saldo;
+        string new_user;
+        int32_t saldo;
+
+        cout << "Ingrese la cedula: ";
+        cin >> id;
+        cout << "Ingrese la contraseña: ";
+        cin >> pass;
+        cout << "Ingrese el saldo del nuevo usuario: ";
+        cin >> saldo;
+
+        if (cin.fail())
+        {
+            cin.clear();
+            while (cin.get() != '\n')
+                ;
+
+            cout << "Error. Ingrese todos los campos.\n";
+            return ERROR;
+        }
+
+        if (saldo < 0)
+        {
+            cout << "Error. El saldo debe ser positivo.\n";
+            return ERROR;
+        }
+
+        if (!is_number(id) | !is_number(to_string(saldo)))
+        {
+            cout << "Error. El saldo y el usuario deben ser numericos.\n";
+            return ERROR;
+        }
+
+        if (!new_user_check(users_file, id))
+            return ERROR;
+
+        new_user = id + ',' + pass + to_string(saldo) + '\n';
+        users_file += new_user;
+
+        if (!write_data(USERS_FILE, cypher_1, SEMILLA, users_file))
+        {
+            cout << "Error al escribir en el archivo.\n";
+            return ERROR;
+        }
+
+        return OK;
     }
 
 }
@@ -122,7 +258,6 @@ my_error_t main_app_atm()
 
                 app_administrador(users_file);
             }
-
             break;
         case 2:
             break;
@@ -183,10 +318,23 @@ void app_administrador(string &users_file)
         switch (opcion)
         {
         case 1:
-            
+            cout << "Crear Usuario\n";
+            if (crear_usuario(users_file) == ERROR)
+            {
+                cout << "Error. No se pudo crear el usuario.\n";
+            }
+            else
+            {
+                cout << "Nuevo usuario creado con exito.\n";
+            }
             break;
-        
+
+        case 2:
+            cout << "Salir\n";
+            break;
+
         default:
+            cout << "Opción invalida.\n";
             break;
         }
 

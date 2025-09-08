@@ -38,4 +38,5 @@ my_error_t validar_usuario(const string &file_string, bool admin, string &user_d
 
 void app_administrador(string &users_file);
 
+
 #endif //APP_ATM_HPP
