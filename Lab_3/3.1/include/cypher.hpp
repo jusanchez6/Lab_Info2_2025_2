@@ -44,8 +44,34 @@ bool cypher_1(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols);
 bool cypher_2(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols);
 
 
+/**
+ * @brief Decifra una matrix de bits cifrada por el metodo 1
+ * 
+ * 
+ * @param matrix Matriz de bits a decifrar.
+ * @param n Número de bits en cada grupo.
+ * @param rows Número de filas en la matriz.
+ * @param cols Número de columnas en la matriz.
+ * 
+ * @return true al terminar el decifrado.
+ * 
+ */
 bool decypher_1(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols);
 
+
+/**
+ * @brief Decifra una matrix de bits cifrada por el metodo 2
+ * 
+ * 
+ * @param matrix Matriz de bits a decifrar.
+ * @param n Número de bits en cada grupo.
+ * @param rows Número de filas en la matriz.
+ * @param cols Número de columnas en la matriz.
+ * 
+ * @return true al terminar el decifrado.
+ * 
+ */
 bool decypher_2(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols);
+
 
 #endif // CYPHER_HPP
