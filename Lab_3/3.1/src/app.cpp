@@ -13,13 +13,13 @@ my_error_t app_main (char * argv[]) {
         return ERROR;
     }
 
-    if (!(strcmp(metodo, "c1"))) {
+    if (strcmp(metodo, "c1") == 0) {
         result = app(cypher_1, origen, destino, semilla);
-    } else if (!(strcmp(metodo, "c2"))) {
+    } else if (strcmp(metodo, "c2") == 0) {
         result = app(cypher_2, origen, destino, semilla);
-    } else if (!(strcmp(metodo, "d1"))) {
+    } else if (strcmp(metodo, "d1") == 0) {
         result = app(decypher_1, origen, destino, semilla);
-    } else if (!(strcmp(metodo, "d1"))) {
+    } else if (strcmp(metodo, "d2") == 0) {
         result = app(decypher_2, origen, destino, semilla);
     } else {
         cout << "Metodo no valido" << endl;
@@ -36,7 +36,7 @@ my_error_t app_main (char * argv[]) {
 
 
 my_error_t app (metodo_ptr metodo, char *origen, char *destino, uint8_t semilla) {
-    uint8_t *memory;
+    uint8_t * memory;
     uint8_t ** matrix_binaria;
     int32_t size;
 
@@ -46,6 +46,7 @@ my_error_t app (metodo_ptr metodo, char *origen, char *destino, uint8_t semilla)
         return ERROR;
 
     if (assing_memory(&matrix_binaria, size) == 0) {
+        cout << "Error. No se pudo asignar memoria.\n";
         return ERROR;
     }
 
@@ -76,7 +77,7 @@ my_error_t app (metodo_ptr metodo, char *origen, char *destino, uint8_t semilla)
 
     binary_to_char(matrix_binaria, memory, size);
 
-    cout << "Matrix binaria" << endl;
+    cout << "Matrix binaria: " << endl;
 
     for (int i=0; i < size; i++)
         for (int j=0; j < BITS_ON_BYTES; j++) 
@@ -121,7 +122,7 @@ int read_file(const char *filename, uint8_t ** memory) {
         *memory = new uint8_t[size];    // Reservar la memoria necesaria para el archivo
 
         if (*memory == NULL) {
-            cout << "No se pudo reservar la memoria" << endl;
+            cout << "Error. No se pudo reservar la memoria" << endl;
             file.close();
             return ERROR;
         }
@@ -142,7 +143,7 @@ my_error_t assing_memory(uint8_t *** matrix_binaria, int size) {
 
     // 2. Verificamos que la memoria se haya asignado correctamente
     if (*matrix_binaria == NULL) {
-        cout << "No se pudo asignar la memoria" << endl;
+        cout << "Error. No se pudo asignar la memoria" << endl;
         return ERROR;
     }
 
@@ -202,4 +203,5 @@ void binary_to_char(uint8_t **matrix_binaria, uint8_t *memory, int32_t size) {
     for (uint32_t i=0; i < size; i++) {
         *(memory + i) = binary_to_int(*(matrix_binaria + i));
     }
+    return;
 }

@@ -1,300 +1,296 @@
 #include <app_atm.hpp>
+#include <app.hpp>
 #include <string>
 
-namespace
+string read_data(const char *file, metodo_ptr metodo, uint32_t semilla)
+{
+    uint8_t *memory;
+    uint8_t **matrix_binaria;
+    uint32_t size;
+
+    std::string user_file = NO_DATA;
+
+    size = read_file(file, &memory);
+
+    if (size == -1)
+        return NULL_STR;
+
+    if (size == 0)
+        return USERS_FILE;
+
+    if (assing_memory(&matrix_binaria, size) == ERROR)
+    {
+        cout << "No se pudo asignar memoria dinamica para la aplicación" << endl;
+        return NULL_STR;
+    }
+
+    if (int_to_bynary_convert(memory, matrix_binaria, size) == ERROR)
+    {
+        cout << "No se pudo convertir los datos a binario" << endl;
+        delete[] memory;
+        return NULL_STR;
+    }
+
+    delete[] memory;
+
+    if (!metodo(matrix_binaria, semilla, size, BITS_ON_BYTES))
+    {
+        cout << "Error al aplicar la operacion" << endl;
+        delete_memory(&matrix_binaria, size);
+        return NULL_STR;
+    }
+
+    memory = new uint8_t[size];
+
+    if (memory == NULL)
+    {
+        cout << "Sin memoria disponible" << endl;
+        delete_memory(&matrix_binaria, size);
+        return NULL_STR;
+    }
+
+    binary_to_char(matrix_binaria, memory, size);
+    delete_memory(&matrix_binaria, size);
+
+    user_file = string((char *)memory);
+
+    delete[] memory;
+
+    return user_file;
+}
+
+my_error_t write_data(const char *data_file, metodo_ptr metodo, uint32_t semilla, string &file_string)
+{
+    uint8_t *memory;
+    uint8_t **matrix_binaria;
+    int32_t size = file_string.size();
+
+    if (size == 0)
+    {
+        cout << "Sin datos para escribir.\n";
+        return ERROR;
+    }
+
+    memory = new uint8_t[size];
+
+    if (memory == NULL)
+    {
+        cout << "Error, sin memoria disponible" << endl;
+        return ERROR;
+    }
+
+    copy(file_string.begin(), file_string.end(), memory);
+
+    if (assing_memory(&matrix_binaria, size) == ERROR)
+    {
+        cout << "Error, sin memoria disponible" << endl;
+        return ERROR;
+    }
+
+    if (int_to_bynary_convert(memory, matrix_binaria, size))
+    {
+        cout << "Error. No se pudo convertir el contenido a binario.\n";
+        delete[] memory;
+        delete_memory(&matrix_binaria, size);
+        return ERROR;
+    }
+
+    delete[] memory;
+
+    if (!metodo(matrix_binaria, semilla, size, BITS_ON_BYTES))
+    {
+        cout << "Error al cifrar los datos.\n";
+        delete_memory(&matrix_binaria, size);
+        return ERROR;
+    }
+
+    binary_to_char(matrix_binaria, memory, size);
+    delete_memory(&matrix_binaria, size);
+
+    ofstream file_out(data_file, ios::binary | ios::trunc);
+
+    if (!file_out.is_open())
+    {
+        cout << "Error. No se pudo abrir el archivo de escritura.\n";
+        delete[] memory;
+        return ERROR;
+    }
+
+    file_out.write((char *)memory, size);
+    file_out.close();
+
+    return OK;
+}
+
+bool validate_credentials(string &user, string &password, const string &file_string, bool admin, string &user_data)
+{
+    istringstream stream(file_string);
+    string line, new_line;
+
+    while (getline(stream, line))
+    {
+        new_line = line;
+
+        if (!admin)
+            line = line.substr(0, line.find_last_of(','));
+
+        if (line == user + "," + password)
+        {
+            user_data = new_line;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool is_number(const string &str_number)
+{
+    for (char c : str_number)
+        if (!isdigit(c))
+            return false;
+    return true;
+}
+
+bool new_user_check(const string user_data, string &id)
 {
 
-    string read_data(const char *file, metodo_ptr metodo, uint32_t semilla)
+    istringstream stream(user_data);
+    string line;
+
+    while (getline(stream, line))
     {
-        uint8_t *memory;
-        uint8_t **matrix_binaria;
-        uint32_t size;
-
-        std::string user_file = NO_DATA;
-
-        size = read_file(file, &memory);
-
-        if (size == -1)
-            return NULL_STR;
-
-        if (size == 0)
-            return USERS_FILE;
-
-        if (assing_memory(&matrix_binaria, size) == ERROR)
+        if (line.substr(0, line.find(',')) == id)
         {
-            cout << "No se pudo asignar memoria dinamica para la aplicación" << endl;
-            return NULL_STR;
+            cout << "El usuario ya se encuentra registrado.\n";
+            return false;
         }
+    }
+    return true;
+}
 
-        if (int_to_bynary_convert(memory, matrix_binaria, size) == ERROR)
-        {
-            cout << "No se pudo convertir los datos a binario" << endl;
-            delete[] memory;
-            return NULL_STR;
-        }
+my_error_t crear_usuario(string &users_file)
+{
+    string id;
+    string pass;
+    string str_saldo;
+    string new_user;
+    int32_t saldo;
 
-        delete[] memory;
+    cout << "Ingrese la cedula: ";
+    cin >> id;
+    cout << "Ingrese la contraseña: ";
+    cin >> pass;
+    cout << "Ingrese el saldo del nuevo usuario: ";
+    cin >> saldo;
 
-        if (!metodo(matrix_binaria, semilla, size, BITS_ON_BYTES))
-        {
-            cout << "Error al aplicar la operacion" << endl;
-            delete_memory(&matrix_binaria, size);
-            return NULL_STR;
-        }
+    if (cin.fail())
+    {
+        cin.clear();
+        while (cin.get() != '\n')
+            ;
 
-        memory = new uint8_t[size];
-
-        if (memory == NULL)
-        {
-            cout << "Sin memoria disponible" << endl;
-            delete_memory(&matrix_binaria, size);
-            return NULL_STR;
-        }
-
-        binary_to_char(matrix_binaria, memory, size);
-        delete_memory(&matrix_binaria, size);
-
-        user_file = string((char *)memory);
-
-        delete[] memory;
-
-        return user_file;
+        cout << "Error. Ingrese todos los campos.\n";
+        return ERROR;
     }
 
-    my_error_t write_data(const char *data_file, metodo_ptr metodo, uint32_t semilla, string &file_string)
+    if (saldo < 0)
     {
-        uint8_t *memory;
-        uint8_t **matrix_binaria;
-        int32_t size = file_string.size();
-
-        if (size == 0)
-        {
-            cout << "Sin datos para escribir.\n";
-            return ERROR;
-        }
-
-        memory = new uint8_t[size];
-
-        if (memory == NULL)
-        {
-            cout << "Error, sin memoria disponible" << endl;
-            return ERROR;
-        }
-
-        copy(file_string.begin(), file_string.end(), memory);
-
-        if (assing_memory(&matrix_binaria, size) == ERROR)
-        {
-            cout << "Error, sin memoria disponible" << endl;
-            return ERROR;
-        }
-
-        if (int_to_bynary_convert(memory, matrix_binaria, size))
-        {
-            cout << "Error. No se pudo convertir el contenido a binario.\n";
-            delete[] memory;
-            delete_memory(&matrix_binaria, size);
-            return ERROR;
-        }
-
-        delete[] memory;
-
-        if (!metodo(matrix_binaria, semilla, size, BITS_ON_BYTES))
-        {
-            cout << "Error al cifrar los datos.\n";
-            delete_memory(&matrix_binaria, size);
-            return ERROR;
-        }
-
-        binary_to_char(matrix_binaria, memory, size);
-        delete_memory(&matrix_binaria, size);
-
-        ofstream file_out(data_file, ios::binary | ios::trunc);
-
-        if (!file_out.is_open())
-        {
-            cout << "Error. No se pudo abrir el archivo de escritura.\n";
-            delete[] memory;
-            return ERROR;
-        }
-
-        file_out.write((char *)memory, size);
-        file_out.close();
-
-        return OK;
+        cout << "Error. El saldo debe ser positivo.\n";
+        return ERROR;
     }
 
-    bool validate_credentials(string &user, string &password, const string &file_string, bool admin, string &user_data)
+    if (!is_number(id) | !is_number(to_string(saldo)))
     {
-        istringstream stream(file_string);
-        string line, new_line;
-
-        while (getline(stream, line))
-        {
-            new_line = line;
-
-            if (!admin)
-                line = line.substr(0, line.find_last_of(','));
-
-            if (line == user + "," + password)
-            {
-                user_data = new_line;
-                return true;
-            }
-        }
-        return false;
+        cout << "Error. El saldo y el usuario deben ser numericos.\n";
+        return ERROR;
     }
 
-    bool is_number(const string &str_number)
+    if (!new_user_check(users_file, id))
+        return ERROR;
+
+    new_user = id + ',' + pass + to_string(saldo) + '\n';
+    users_file += new_user;
+
+    if (!write_data(USERS_FILE, cypher_1, SEMILLA, users_file))
     {
-        for (char c : str_number)
-            if (!isdigit(c))
-                return false;
-        return true;
+        cout << "Error al escribir en el archivo.\n";
+        return ERROR;
     }
 
-    bool new_user_check(const string user_data, string &id)
+    return OK;
+}
+
+my_error_t consultar_saldo(string &file_string, string &user)
+{
+
+    string id = user.substr(0, user.find(','));
+    string pass = user.substr(user.find(',') + 1, user.find_last_of(','));
+    uint32_t saldo = stoi(user.substr(user.find_last_of(',') + 1));
+
+    if (saldo < 1000)
     {
-
-        istringstream stream(user_data);
-        string line;
-
-        while (getline(stream, line))
-        {
-            if (line.substr(0, line.find(',')) == id)
-            {
-                cout << "El usuario ya se encuentra registrado.\n";
-                return false;
-            }
-        }
-        return true;
+        cout << "Error. saldo menor a 1000\n";
+        return ERROR;
     }
-
-    my_error_t crear_usuario(string &users_file)
+    else
     {
-        string id;
-        string pass;
-        string str_saldo;
-        string new_user;
-        int32_t saldo;
-
-        cout << "Ingrese la cedula: ";
-        cin >> id;
-        cout << "Ingrese la contraseña: ";
-        cin >> pass;
-        cout << "Ingrese el saldo del nuevo usuario: ";
-        cin >> saldo;
-
-        if (cin.fail())
-        {
-            cin.clear();
-            while (cin.get() != '\n')
-                ;
-
-            cout << "Error. Ingrese todos los campos.\n";
-            return ERROR;
-        }
-
-        if (saldo < 0)
-        {
-            cout << "Error. El saldo debe ser positivo.\n";
-            return ERROR;
-        }
-
-        if (!is_number(id) | !is_number(to_string(saldo)))
-        {
-            cout << "Error. El saldo y el usuario deben ser numericos.\n";
-            return ERROR;
-        }
-
-        if (!new_user_check(users_file, id))
-            return ERROR;
-
-        new_user = id + ',' + pass + to_string(saldo) + '\n';
-        users_file += new_user;
-
-        if (!write_data(USERS_FILE, cypher_1, SEMILLA, users_file))
-        {
-            cout << "Error al escribir en el archivo.\n";
-            return ERROR;
-        }
-
-        return OK;
-    }
-
-    my_error_t consultar_saldo(string &file_string, string &user)
-    {
-
-        string id = user.substr(0, user.find(','));
-        string pass = user.substr(user.find(',') + 1, user.find_last_of(','));
-        uint32_t saldo = stoi(user.substr(user.find_last_of(',') + 1));
-
-        if (saldo < 1000)
-        {
-            cout << "Error. saldo menor a 1000\n";
-            return ERROR;
-        }
-        else
-        {
-            saldo -= 1000;
-            cout << "Saldo disponible: " << saldo << endl;
-        }
-
-        string new_data = id + ',' + pass + ',' + to_string(saldo);
-        file_string.replace(file_string.find(user), user.length(), new_data);
-
-        if (write_data(USERS_FILE, cypher_1, SEMILLA, file_string) == ERROR)
-        {
-            cout << "Algo salió mal y como en bancolombia se perdió la platica.\n";
-            return ERROR;
-        }
-
-        user = new_data;
-
-        return OK;
-    }
-
-    my_error_t retirar(string &file_string, string &user)
-    {
-
-        string id = user.substr(0, user.find(','));
-        string pass = user.substr(user.find(',') + 1, user.find_last_of(','));
-        uint32_t saldo = stoi(user.substr(user.find_last_of(',') + 1));
-
-        int32_t retiro;
-        cout << "Ingrese el saldo a retirar: ";
-        cin >> retiro;
-
-        if (saldo < 1000)
-        {
-            cout << "Error. saldo menor a 1000\n";
-            return ERROR;
-        }
-
         saldo -= 1000;
-
-        if (retiro <= 0)
-        {
-            std::cout << "Error. El monto a retirar debe ser mayor a 0.\n";
-            return ERROR;
-        }
-
-        if (retiro > saldo)
-        {
-            std::cout << "Error. El monto a retirar es mayor al saldo.\n";
-            return ERROR;
-        }
-
-        cout << "Retiro por: " << retiro << endl;
-        saldo -= retiro;
-        
-        string new_data = id + "," + pass + "," + std::to_string(saldo);
-        file_string.replace(file_string.find(user), user.length(), new_data);
-        write_data(USERS_FILE, cypher_1, SEMILLA, file_string);
-        user = new_data;
-        return OK;
+        cout << "Saldo disponible: " << saldo << endl;
     }
 
+    string new_data = id + ',' + pass + ',' + to_string(saldo);
+    file_string.replace(file_string.find(user), user.length(), new_data);
+
+    if (write_data(USERS_FILE, cypher_1, SEMILLA, file_string) == ERROR)
+    {
+        cout << "Algo salió mal y como en bancolombia se perdió la platica.\n";
+        return ERROR;
+    }
+
+    user = new_data;
+
+    return OK;
+}
+
+my_error_t retirar(string &file_string, string &user)
+{
+
+    string id = user.substr(0, user.find(','));
+    string pass = user.substr(user.find(',') + 1, user.find_last_of(','));
+    uint32_t saldo = stoi(user.substr(user.find_last_of(',') + 1));
+
+    int32_t retiro;
+    cout << "Ingrese el saldo a retirar: ";
+    cin >> retiro;
+
+    if (saldo < 1000)
+    {
+        cout << "Error. saldo menor a 1000\n";
+        return ERROR;
+    }
+
+    saldo -= 1000;
+
+    if (retiro <= 0)
+    {
+        std::cout << "Error. El monto a retirar debe ser mayor a 0.\n";
+        return ERROR;
+    }
+
+    if (retiro > saldo)
+    {
+        std::cout << "Error. El monto a retirar es mayor al saldo.\n";
+        return ERROR;
+    }
+
+    cout << "Retiro por: " << retiro << endl;
+    saldo -= retiro;
+
+    string new_data = id + "," + pass + "," + std::to_string(saldo);
+    file_string.replace(file_string.find(user), user.length(), new_data);
+    write_data(USERS_FILE, cypher_1, SEMILLA, file_string);
+    user = new_data;
+    return OK;
 }
 
 // ==========================================================================================

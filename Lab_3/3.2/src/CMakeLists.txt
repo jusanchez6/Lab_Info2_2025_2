@@ -8,11 +8,30 @@ target_include_directories(cypher PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(app PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(app_atm PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-target_link_libraries(app
-                        app_atm
-                        binary_numbers
-                        cypher)
+target_link_libraries(cypher
+    PUBLIC
+        binary_numbers
+)
 
+target_link_libraries(app
+    PUBLIC
+        binary_numbers
+        cypher
+)
+
+target_link_libraries(app_atm
+    PUBLIC
+        app
+        binary_numbers
+        cypher
+)
 
 add_executable(ATM main.cpp)
-target_link_libraries(ATM PRIVATE app)
+
+target_link_libraries(ATM
+    PRIVATE
+        app
+        app_atm
+        cypher
+        binary_numbers
+)

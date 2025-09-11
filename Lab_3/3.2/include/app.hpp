@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <cstdint>
+
 
 #include "cypher.hpp"
 #include "binary_numbers.hpp"
@@ -69,7 +71,7 @@ my_error_t assing_memory(uint8_t *** matrix_binaria, int size);
 /**
  * @brief Libera la memoria dinamica usada en la matrix de contenido
  * 
- * @param matrix_binaria: puntero triple, direccion de la direccion del arreglo (matrix)
+ * @param matrix_binaria: puntero, direccion de la direccion del arreglo (matrix)
  * @param size: tamaño de la matrix
  */
 void delete_memory(uint8_t ***matrix_binaria, uint8_t size);
