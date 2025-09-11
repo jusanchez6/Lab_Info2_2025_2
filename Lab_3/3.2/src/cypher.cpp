@@ -19,11 +19,12 @@ namespace
         for (uint32_t i = 0; i < n; i++)
         {
             if (!(*bits[i]))
+            {
                 zeros++;
-
-            ones = n - zeros;
+            }
         }
 
+        ones = n - zeros;
         if (ones > zeros)
             return EACH_THREE;
         else if (ones < zeros)
@@ -64,10 +65,10 @@ namespace
      */
     void circular_shift_right(uint8_t **bits, uint32_t n)
     {
-        uint8_t aux = *bits[n-1];
+        uint8_t aux = *bits[n - 1];
 
         for (uint32_t i = 0; i < n - 1; i++)
-            *bits[n - 1 - i] = *bits[n -2 - i];
+            *bits[n - 1 - i] = *bits[n - 2 - i];
 
         *bits[0] = aux;
     }
@@ -90,7 +91,6 @@ namespace
     }
 
 }
-
 
 bool cypher_1(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols)
 {
@@ -124,7 +124,6 @@ bool cypher_1(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols)
     return true;
 }
 
-
 bool cypher_2(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols)
 {
     uint8_t **grupo = new uint8_t *[n];
@@ -142,16 +141,14 @@ bool cypher_2(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols)
                 k = 0;
             }
         }
-
     }
     if (k)
         circular_shift_right(grupo, k);
-    
+
     delete[] grupo;
 
     return true;
 }
-
 
 bool decypher_1(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols)
 {
@@ -200,7 +197,6 @@ bool decypher_2(uint8_t **matrix, uint32_t n, uint32_t rows, uint32_t cols)
                 k = 0;
             }
         }
-
     }
     if (k)
         circular_shift_left(grupo, k);

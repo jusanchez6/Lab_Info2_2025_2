@@ -4,8 +4,6 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-#include <cstdint>
-
 
 #include "cypher.hpp"
 #include "binary_numbers.hpp"
@@ -21,14 +19,27 @@ typedef enum {
 
 
 
-// Definición de un puntero a función para métodos de cifrado/descifrado
+// Prototipo de la función para métodos de cifrado/descifrado
 using metodo_ptr = bool (*)(uint8_t **, uint32_t, uint32_t, uint32_t);
 using namespace std;
 
-
+/**
+ * @brief Main de la aplicación de encriptación
+ * 
+ * @param argv: Arreglo de arguemntos de entrada
+ */
 my_error_t app_main(char *argv[]);
 
-
+/**
+ * @brief Función con la logica principal del cifrado
+ * 
+ * @param metodo: nombre de la función con el metodo que se desea aplicar
+ * @param origen: puntero a la dirección donde se encuentra almacenado el nombre del archivo fuente
+ * @param destino: Puntero a la dirección donde se encuentra almacenado el nombre del archivo destino
+ * @param semilla: Numer de bits a rotar o comparar
+ * 
+ * @return OK: SI todo salió bien
+ */
 my_error_t app (metodo_ptr metodo, char *origen, char *destino, uint8_t semilla);
 
 
@@ -71,7 +82,7 @@ my_error_t assing_memory(uint8_t *** matrix_binaria, int size);
 /**
  * @brief Libera la memoria dinamica usada en la matrix de contenido
  * 
- * @param matrix_binaria: puntero, direccion de la direccion del arreglo (matrix)
+ * @param matrix_binaria: puntero triple, direccion de la direccion del arreglo (matrix)
  * @param size: tamaño de la matrix
  */
 void delete_memory(uint8_t ***matrix_binaria, uint8_t size);
@@ -89,6 +100,14 @@ void delete_memory(uint8_t ***matrix_binaria, uint8_t size);
 my_error_t int_to_bynary_convert(uint8_t *memory, uint8_t ** bin_matrix, uint size);
 
 
+/**
+ * @brief Convierte una matrix binaria a char y lo guarda en un espacio de la memoria
+ * 
+ * @param matrix_binaria: Puntero al arreglo donde se almacena la información en binario
+ * @param memory: Espacio de memoria donde se almacenará el nuevo contenido
+ * @param size: Tamaño del contenido
+ * 
+ */
 void binary_to_char(uint8_t **matrix_binaria, uint8_t *memory, int32_t size);
 
 

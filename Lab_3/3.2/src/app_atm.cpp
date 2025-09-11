@@ -2,6 +2,80 @@
 #include <app.hpp>
 #include <string>
 
+
+my_error_t main_app_atm()
+{
+    uint16_t opcion;
+    string user_data = NO_DATA;
+    string admin_file = read_data(ADMIN_FILE, decypher_1, SEMILLA);
+    string users_file = read_data(USERS_FILE, decypher_1, SEMILLA);
+
+    if (admin_file ==  NO_DATA)
+        admin_file = NULL_STR;
+    
+    if (admin_file.empty())
+    {
+        cout << "Error al leer el archivo de administradores" << endl;
+        return ERROR;
+    }
+
+    if (users_file.empty())
+    {
+        cout << "Error al leer el archivo de usuarios" << endl;
+        return ERROR;
+    }
+
+    if (users_file == NO_DATA)
+        users_file = NULL_STR;
+
+    do
+    {
+        cout << "=========================" << endl;
+        cout << "1. Administrador\n2. Usuario\n3. Salir\n";
+        cout << "Seleccione una opción: ";
+        cin >> opcion;
+
+        if (std::cin.fail()) {
+            std::cin.clear();
+            while (std::cin.get() != '\n');
+            opcion = 0;
+        }
+
+        switch (opcion)
+        {
+        case 1:
+            cout << "=========================" << endl;
+            if (validar_usuario(admin_file, true, user_data))
+            {
+                cout << "=========================" << endl;
+
+                app_administrador(users_file);
+            }
+            break;
+        case 2:
+            cout << "=========================" << endl;
+            if (validar_usuario(users_file, false, user_data))
+            {
+                cout << "=========================" << endl;
+
+                app_usuarios(users_file, user_data);
+            }
+            break;
+
+        case 3:
+            cout << "Salir.\n";
+            cout << "=========================" << endl;
+            break;
+
+        default:
+            cout << "Opción invalida.\n";
+            break;
+        }
+    } while (opcion != 3);
+
+    return OK;
+}
+
 string read_data(const char *file, metodo_ptr metodo, uint32_t semilla)
 {
     uint8_t *memory;
@@ -12,15 +86,17 @@ string read_data(const char *file, metodo_ptr metodo, uint32_t semilla)
 
     size = read_file(file, &memory);
 
-    if (size == -1)
+    if (size == -1){
+        cout << "Error, No se pudo abrir el archivo\n";
         return NULL_STR;
-
+        
+    }
     if (size == 0)
-        return USERS_FILE;
+        return user_file;
 
     if (assing_memory(&matrix_binaria, size) == ERROR)
     {
-        cout << "No se pudo asignar memoria dinamica para la aplicación" << endl;
+        cout << "Error. No se pudo asignar memoria dinamica para la aplicación" << endl;
         return NULL_STR;
     }
 
@@ -44,7 +120,7 @@ string read_data(const char *file, metodo_ptr metodo, uint32_t semilla)
 
     if (memory == NULL)
     {
-        cout << "Sin memoria disponible" << endl;
+        cout << "Error. Sin memoria disponible" << endl;
         delete_memory(&matrix_binaria, size);
         return NULL_STR;
     }
@@ -87,7 +163,7 @@ my_error_t write_data(const char *data_file, metodo_ptr metodo, uint32_t semilla
         return ERROR;
     }
 
-    if (int_to_bynary_convert(memory, matrix_binaria, size))
+    if (!int_to_bynary_convert(memory, matrix_binaria, size))
     {
         cout << "Error. No se pudo convertir el contenido a binario.\n";
         delete[] memory;
@@ -125,23 +201,30 @@ my_error_t write_data(const char *data_file, metodo_ptr metodo, uint32_t semilla
 bool validate_credentials(string &user, string &password, const string &file_string, bool admin, string &user_data)
 {
     istringstream stream(file_string);
-    string line, new_line;
+    string line;
+
+    cout << "Revisando credenciales\n";
 
     while (getline(stream, line))
     {
-        new_line = line;
+        string temp_line = line;
 
+        // Si es usuario normal, solo comparamos la cedula + contraseña
         if (!admin)
             line = line.substr(0, line.find_last_of(','));
 
         if (line == user + "," + password)
         {
-            user_data = new_line;
+            // Asignamos user_data correctamente con la línea original del archivo
+            user_data = temp_line;
+            cout << "Usuario encontrado: " << user_data << "\n";
             return true;
         }
     }
+
     return false;
 }
+
 
 bool is_number(const string &str_number)
 {
@@ -186,9 +269,7 @@ my_error_t crear_usuario(string &users_file)
     if (cin.fail())
     {
         cin.clear();
-        while (cin.get() != '\n')
-            ;
-
+        while (cin.get() != '\n');
         cout << "Error. Ingrese todos los campos.\n";
         return ERROR;
     }
@@ -205,11 +286,18 @@ my_error_t crear_usuario(string &users_file)
         return ERROR;
     }
 
+    if (id.empty() || pass.empty()) {
+        cout << "Error. Todos los campos son obligatorios.\n";
+        return ERROR;
+    }
+
     if (!new_user_check(users_file, id))
         return ERROR;
 
-    new_user = id + ',' + pass + to_string(saldo) + '\n';
+    new_user = id + ',' + pass + ',' + to_string(saldo) + '\n';
     users_file += new_user;
+
+    cout << users_file << endl;
 
     if (!write_data(USERS_FILE, cypher_1, SEMILLA, users_file))
     {
@@ -222,138 +310,91 @@ my_error_t crear_usuario(string &users_file)
 
 my_error_t consultar_saldo(string &file_string, string &user)
 {
-
-    string id = user.substr(0, user.find(','));
-    string pass = user.substr(user.find(',') + 1, user.find_last_of(','));
+    string id   = user.substr(0, user.find(','));
+    string pass = user.substr(user.find(',') + 1, user.find_last_of(',') - user.find(',') - 1);
     uint32_t saldo = stoi(user.substr(user.find_last_of(',') + 1));
 
+    // Cobro de 1000 por consulta
     if (saldo < 1000)
     {
-        cout << "Error. saldo menor a 1000\n";
+        cout << "Error. Saldo insuficiente para consulta\n";
         return ERROR;
     }
-    else
-    {
-        saldo -= 1000;
-        cout << "Saldo disponible: " << saldo << endl;
-    }
 
-    string new_data = id + ',' + pass + ',' + to_string(saldo);
-    file_string.replace(file_string.find(user), user.length(), new_data);
+    saldo -= 1000;
+    cout << "Saldo disponible (descontando 1000 por consulta): " << saldo << endl;
 
+    // Actualizamos user y archivo
+    string new_user = id + "," + pass + "," + to_string(saldo);
+    file_string.replace(file_string.find(user), user.length(), new_user);
+    
     if (write_data(USERS_FILE, cypher_1, SEMILLA, file_string) == ERROR)
     {
-        cout << "Algo salió mal y como en bancolombia se perdió la platica.\n";
+        cout << "Error al actualizar el saldo\n";
         return ERROR;
     }
 
-    user = new_data;
-
+    user = new_user;
     return OK;
 }
 
+
+
 my_error_t retirar(string &file_string, string &user)
 {
-
-    string id = user.substr(0, user.find(','));
-    string pass = user.substr(user.find(',') + 1, user.find_last_of(','));
-    uint32_t saldo = stoi(user.substr(user.find_last_of(',') + 1));
+    string id   = user.substr(0, user.find(','));
+    string pass = user.substr(user.find(',') + 1, user.find_last_of(',') - user.find(',') - 1);
+    int32_t saldo = stoi(user.substr(user.find_last_of(',') + 1));
 
     int32_t retiro;
     cout << "Ingrese el saldo a retirar: ";
     cin >> retiro;
 
-    if (saldo < 1000)
-    {
-        cout << "Error. saldo menor a 1000\n";
+    if (cin.fail()) {
+        cin.clear();
+        while (cin.get() != '\n');
+        cout << "Error. Entrada inválida\n";
         return ERROR;
     }
 
-    saldo -= 1000;
-
-    if (retiro <= 0)
-    {
-        std::cout << "Error. El monto a retirar debe ser mayor a 0.\n";
+    if (retiro <= 0) {
+        cout << "Error. El monto a retirar debe ser mayor a 0.\n";
         return ERROR;
     }
 
-    if (retiro > saldo)
-    {
-        std::cout << "Error. El monto a retirar es mayor al saldo.\n";
+    if (retiro > saldo) {
+        cout << "Error. El monto a retirar es mayor al saldo disponible.\n";
         return ERROR;
     }
 
-    cout << "Retiro por: " << retiro << endl;
     saldo -= retiro;
+    cout << "Retiro por: " << retiro << endl;
 
-    string new_data = id + "," + pass + "," + std::to_string(saldo);
-    file_string.replace(file_string.find(user), user.length(), new_data);
-    write_data(USERS_FILE, cypher_1, SEMILLA, file_string);
-    user = new_data;
-    return OK;
-}
-
-// ==========================================================================================
-// ==========================================================================================
-// ==========================================================================================
-
-my_error_t main_app_atm()
-{
-    uint16_t opcion;
-    string user_data = NO_DATA;
-    string admin_file = read_data(ADMIN_FILE, decypher_1, SEMILLA);
-    string users_file = read_data(USERS_FILE, decypher_1, SEMILLA);
-
-    if (admin_file.empty())
-    {
-        cout << "Error al leer el archivo de administradores" << endl;
+    string new_user = id + "," + pass + "," + to_string(saldo);
+    size_t pos = file_string.find(user);
+    if (pos != string::npos)
+        file_string.replace(pos, user.length(), new_user);
+    else {
+        cout << "Error interno: usuario no encontrado en archivo\n";
         return ERROR;
     }
 
-    if (users_file.empty())
-    {
-        users_file = NULL_STR;
+    user = new_user;
+
+    if (write_data(USERS_FILE, cypher_1, SEMILLA, file_string) == ERROR) {
+        cout << "Error al actualizar el saldo\n";
+        return ERROR;
     }
-
-    do
-    {
-        cout << "1. Administrador\n2. Usuario\n3. Salir\n";
-        cout << "Seleccione una opción: ";
-        cin >> opcion;
-
-        switch (opcion)
-        {
-        case 1:
-            cout << "=========================" << endl;
-            if (validar_usuario(admin_file, true, user_data))
-            {
-                cout << "=========================" << endl;
-
-                app_administrador(users_file);
-            }
-            break;
-        case 2:
-            cout << "=========================" << endl;
-            if (validar_usuario(admin_file, false, user_data))
-            {
-                cout << "=========================" << endl;
-
-                app_usuarios(users_file, user_data);
-            }
-            break;
-
-        case 3:
-            cout << "Salir.\n";
-            break;
-
-        default:
-            cout << "Opción invalida.\n";
-            break;
-        }
-    } while (opcion != 3);
 
     return OK;
 }
+
+
+// ==========================================================================================
+// ==========================================================================================
+// ==========================================================================================
+
+
 
 my_error_t validar_usuario(const string &file_string, bool admin, string &user_data)
 {
@@ -367,10 +408,10 @@ my_error_t validar_usuario(const string &file_string, bool admin, string &user_d
     string user_id;
     string pass;
 
-    cout << "Ingrese usuario: ";
+    cout << "Ingrese usuario:";
     cin >> user_id;
 
-    cout << "Ingrese su contraseña: ";
+    cout << "Ingrese su contraseña:";
     cin >> pass;
 
     if (validate_credentials(user_id, pass, file_string, admin, user_data))
@@ -387,9 +428,10 @@ my_error_t validar_usuario(const string &file_string, bool admin, string &user_d
 
 void app_administrador(string &users_file)
 {
+    cout << "=========================" << endl;
     cout << "Bienvenido Administrador! \n";
 
-    uint8_t opcion;
+    int opcion;
 
     do
     {
@@ -397,9 +439,16 @@ void app_administrador(string &users_file)
         std::cout << "Seleccione una opción: ";
         std::cin >> opcion;
 
+        if (std::cin.fail()) {
+            std::cin.clear();
+            while (std::cin.get() != '\n');
+            opcion = 0;
+        }
+
         switch (opcion)
         {
         case 1:
+            cout << "=========================" << endl;
             cout << "Crear Usuario\n";
             if (crear_usuario(users_file) == ERROR)
             {
@@ -412,6 +461,7 @@ void app_administrador(string &users_file)
             break;
 
         case 2:
+            cout << "=========================" << endl;
             cout << "Salir\n";
             break;
 
@@ -425,7 +475,9 @@ void app_administrador(string &users_file)
 
 void app_usuarios(string &file_string, string &user)
 {
+    cout << "=========================" << endl;
     std::cout << "Bienvenido usuario\n";
+    cout << "=========================" << endl;
     uint16_t opcion;
     do
     {
@@ -436,14 +488,17 @@ void app_usuarios(string &file_string, string &user)
         switch (opcion)
         {
         case 1:
+            cout << "=========================" << endl;
             std::cout << "Consultar saldo\n";
             consultar_saldo(file_string, user);
             break;
         case 2:
+            cout << "=========================" << endl;
             std::cout << "Retirar\n";
             retirar(file_string, user);
             break;
         case 3:
+            cout << "=========================" << endl;
             std::cout << "Salir\n";
             break;
         default:

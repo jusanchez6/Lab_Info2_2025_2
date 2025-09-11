@@ -22,7 +22,7 @@
 #define SEMILLA 6
 #define BITS_ON_BYTES 8
 #define NULL_STR ""
-#define NO_DATA 0
+#define NO_DATA "0"
 
 
 using metodo_ptr = bool (*)(uint8_t **, uint32_t, uint32_t, uint32_t);
