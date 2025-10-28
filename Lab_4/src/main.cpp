@@ -1,8 +1,6 @@
-#include <iostream>
-
-using namespace std;
+#include <app.hpp>
 
 int main () {
-    cout << "Hola mundo.\n";
+    main_app("redes.txt");
     return 0;
 }
