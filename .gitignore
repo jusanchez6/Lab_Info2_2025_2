@@ -47,5 +47,5 @@
 **/build/
 **/html/
 **/.cache/
-
+**/.venv/
 
